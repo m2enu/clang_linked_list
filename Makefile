@@ -1,17 +1,19 @@
-MAKEFLAGS   += --no-builtin-rules
-CC          := gcc
-CFLAGS      := -Wall -Wextra -MMD -MP
-LDFLAGS     :=
-LIBS        :=
-DIR_SRC     := src
-DIR_OBJ     := obj
-DIR_SRCS    := $(shell find $(DIR_SRC) -type d)
-INCLUDE     := $(foreach dir,$(DIR_SRCS),-I$(dir))
-SRCS        := $(foreach dir,$(DIR_SRCS),$(wildcard $(dir)/*.c))
-OBJS        := $(addprefix $(DIR_OBJ)/,$(SRCS:.c=.o))
-DEPS        := $(OBJS:.o=.d)
-TARGET      := $(notdir $(shell pwd)).o
-RM          := rm -rf
+MAKEFLAGS       += --no-builtin-rules
+CC              := gcc
+CFLAGS          := -Wall -Wextra -MMD -MP
+LDFLAGS         :=
+LIBS            :=
+DIR_SRC         := src
+DIR_OBJ         := obj
+DIR_SRCS        := $(shell find $(DIR_SRC) -type d)
+INCLUDE         := $(foreach dir,$(DIR_SRCS),-I$(dir))
+SRC_EXCLUDES    :=
+SRC_TARGETS     := $(foreach dir,$(DIR_SRCS),$(wildcard $(dir)/*.c))
+SRCS            := $(filter-out $(SRC_EXCLUDES),$(SRC_TARGETS))
+OBJS            := $(addprefix $(DIR_OBJ)/,$(SRCS:.c=.o))
+DEPS            := $(OBJS:.o=.d)
+TARGET          := $(notdir $(shell pwd)).o
+RM              := rm -rf
 
 $(TARGET): $(OBJS) $(LIBS)
 	$(CC) -o $@ $^ $(LDFLAGS)
