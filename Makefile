@@ -8,7 +8,7 @@ DIR_OBJ     := obj
 DIR_SRCS    := $(shell find $(DIR_SRC) -type d)
 INCLUDE     := $(foreach dir,$(DIR_SRCS),-I$(dir))
 SRCS        := $(foreach dir,$(DIR_SRCS),$(wildcard $(dir)/*.c))
-OBJS        := $(subst $(DIR_SRC)/,$(DIR_OBJ)/,$(SRCS:.c=.o))
+OBJS        := $(addprefix $(DIR_OBJ)/,$(SRCS:.c=.o))
 DEPS        := $(OBJS:.o=.d)
 TARGET      := $(notdir $(shell pwd)).o
 RM          := rm -rf
@@ -16,7 +16,7 @@ RM          := rm -rf
 $(TARGET): $(OBJS) $(LIBS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-$(DIR_OBJ)/%.o: $(DIR_SRC)/%.c
+$(DIR_OBJ)/%.o: %.c
 	@[ -d `dirname $@` ] || mkdir -p `dirname $@`
 	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDE)
 
