@@ -15,17 +15,17 @@ DEPS            := $(OBJS:.o=.d)
 TARGET          := $(notdir $(shell pwd)).o
 RM              := rm -rf
 
-$(TARGET): $(OBJS) $(LIBS)
+all: $(TARGET)
+
+clean:
+	$(RM) $(DIR_OBJ)/* $(TARGET)
+
+$(TARGET): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 $(DIR_OBJ)/%.o: %.c
 	@[ -d `dirname $@` ] || mkdir -p `dirname $@`
 	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDE)
-
-all: $(TARGET)
-
-clean:
-	$(RM) $(DIR_OBJ)/* $(TARGET)
 
 ifneq ($(MAKECMDGOALS), clean)
 -include $(DEPS)
