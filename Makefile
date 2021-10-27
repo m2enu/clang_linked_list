@@ -1,37 +1,74 @@
-MAKEFLAGS       += --no-builtin-rules
-CC              := gcc
-CFLAGS          := -Wall -Wextra -MMD -MP
-LDFLAGS         :=
-LIBS            :=
-DIR_SRC         := src
-DIR_OBJ         := obj
-DIR_SRCS        := $(shell find $(DIR_SRC) -type d)
-INCLUDE         := $(foreach dir,$(DIR_SRCS),-I$(dir))
-SRC_EXCLUDES    :=
-SRC_TARGETS     := $(foreach dir,$(DIR_SRCS),$(wildcard $(dir)/*.c))
-SRCS            := $(filter-out $(SRC_EXCLUDES),$(SRC_TARGETS))
-OBJS            := $(addprefix $(DIR_OBJ)/,$(SRCS:.c=.o))
-DEPS            := $(OBJS:.o=.d)
-TARGET          := $(notdir $(shell pwd)).o
-RM              := rm -rf
+MAKEFLAGS		+= --no-builtin-rules
 
+# Target definition
+TARGET			 = $(BIN_ROOT)/$(notdir $(shell pwd)).o
+
+# Directory name
+SRC_DIR			:= src
+OBJ_DIR			:= obj
+BIN_DIR			:= bin
+
+# Directory root
+PRJ_ROOT		:= $(abspath .)
+SRC_ROOT		:= $(PRJ_ROOT)/$(SRC_DIR)
+OBJ_ROOT		:= $(PRJ_ROOT)/$(OBJ_DIR)
+BIN_ROOT		:= $(PRJ_ROOT)/$(BIN_DIR)
+
+# Source files
+SRCS			:= \
+	$(SRC_ROOT)/main.c \
+
+# Include directories
+INC_DIRS        := \
+	$(SRC_ROOT) \
+
+# Toolchain
+CC				:= gcc
+RM				:= rm -rf
+MKDIR			:= mkdir -p
+
+# Compiler option
+CFLAGS			:= \
+	-Wall \
+	-Wextra \
+	-MMD \
+	-MP \
+
+# Linker option
+LDFLAGS         := \
+
+# Definition
+INCLUDE			:= $(foreach dir,$(INC_DIRS),-I$(dir))
+OBJS			:= $(subst $(SRC_ROOT),$(OBJ_ROOT),$(SRCS:.c=.o))
+DEPS			:= $(OBJS:.o=.d)
+
+# Quiet
+ifeq ($(VERBOSE),1)
+Q				:=
+else
+Q				:= @
+endif
+
+.PHONY: all
 all: $(TARGET)
 
+.PHONY: clean
 clean:
-	$(RM) $(DIR_OBJ)/* $(TARGET)
+	$(Q)$(RM) $(OBJS) $(DEPS) $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	@[ -d `dirname $@` ] || $(MKDIR) `dirname $@`
+	$(info Generating $(notdir $@))
+	$(Q)$(CC) $(LDFLAGS) -o $@ $^
 
-$(DIR_OBJ)/%.o: %.c
-	@[ -d `dirname $@` ] || mkdir -p `dirname $@`
-	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDE)
+$(OBJ_ROOT)/%.o: $(SRC_ROOT)/%.c
+	@[ -d `dirname $@` ] || $(MKDIR) `dirname $@`
+	$(info Compiling $(notdir $<))
+	$(Q)$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
 ifneq ($(MAKECMDGOALS), clean)
 -include $(DEPS)
 endif
-
-.PHONY: all clean
 
 # end of file {{{1
 # vim:ft=make:noet:ts=4:nowrap:fdm=marker
