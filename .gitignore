@@ -1,0 +1,8 @@
+*.d
+*.o
+*.pyc
+*.pyo
+v*.zip
+test/unity/*.*
+obj/
+tmp/
