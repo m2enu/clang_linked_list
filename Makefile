@@ -1,8 +1,5 @@
 MAKEFLAGS		+= --no-builtin-rules
 
-# Target definition
-TARGET			 = $(BIN_ROOT)/$(notdir $(shell pwd)).o
-
 # Directory name
 SRC_DIR			:= src
 OBJ_DIR			:= obj
@@ -16,7 +13,6 @@ BIN_ROOT		:= $(PRJ_ROOT)/$(BIN_DIR)
 
 # Source files
 SRCS			:= \
-	$(SRC_ROOT)/main.c \
 
 # Include directories
 INC_DIRS        := \
@@ -37,9 +33,17 @@ CFLAGS			:= \
 # Linker option
 LDFLAGS         := \
 
+# Additional configuration
+IS_UNITTEST := $(findstring _unittest_,_$(MAKEFLAGS)_)
+ifeq ($(IS_UNITTEST),1)
+	-include unittest.mk
+else
+	-include all.mk
+endif
+
 # Definition
 INCLUDE			:= $(foreach dir,$(INC_DIRS),-I$(dir))
-OBJS			:= $(subst $(SRC_ROOT),$(OBJ_ROOT),$(SRCS:.c=.o))
+OBJS			:= $(subst $(PRJ_ROOT),$(OBJ_ROOT),$(SRCS:.c=.o))
 DEPS			:= $(OBJS:.o=.d)
 
 # Quiet
@@ -61,13 +65,15 @@ $(TARGET): $(OBJS)
 	$(info Generating $(notdir $@))
 	$(Q)$(CC) $(LDFLAGS) -o $@ $^
 
-$(OBJ_ROOT)/%.o: $(SRC_ROOT)/%.c
+$(OBJ_ROOT)/%.o: $(PRJ_ROOT)/%.c
 	@[ -d `dirname $@` ] || $(MKDIR) `dirname $@`
 	$(info Compiling $(notdir $<))
 	$(Q)$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
-ifneq ($(MAKECMDGOALS), clean)
--include $(DEPS)
+IS_DRYRUN := $(findstring n,$(filter-out --%,$(MAKEFLAGS)))
+ONLY_CLEAN := $(findstring _clean_,_$(MAKEFLAGS)_)
+ifeq ($(or $(IS_DRYRUN),$(ONLY_CLEAN)),)
+	-include $(DEPS)
 endif
 
 # end of file {{{1
