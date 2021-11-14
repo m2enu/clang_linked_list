@@ -12,6 +12,7 @@ TARGET			:= $(BIN_ROOT)/unittest.elf
 SRCS			:= $(SRCS) \
 	$(TST_ROOT)/$(UNITY_DIR)/unity.c \
 	$(TST_ROOT)/test_main.c \
+	$(TST_ROOT)/test_singly_linked_list.c \
 
 # Additional include directories
 INC_DIRS		:= $(INC_DIRS) \

@@ -1,10 +1,12 @@
 /**
- * @file        test_main.c
- * @brief       Unit test template
- * @author      m2enu
- * @copyright   Copyright (c) 2021 m2enu
+ * @file    test_main.c
+ * @brief   Unit test main
+ * @author  m2enu
+ * @par     License
+ * https://github.com/m2enu/clang_linked_list/blob/main/LICENSE
  */
 #include "unity.h"
+#include "test_singly_linked_list.h"
 
 /** Unused indicator to suppress compiler warning
  */
@@ -30,5 +32,6 @@ int main(int argc, char **argv)
     UNUSED_PARAMETER(argv);
 
     UNITY_BEGIN();
+    RUN_TEST(TestSinglyLinkedList);
     return UNITY_END();
 }

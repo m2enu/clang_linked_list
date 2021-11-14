@@ -1,3 +1,4 @@
+compile_commands.json
 *.d
 *.o
 *.elf
@@ -5,5 +6,6 @@
 *.pyo
 v*.zip
 test/unity/*.*
+.cache/
 obj/
 tmp/
