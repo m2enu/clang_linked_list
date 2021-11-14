@@ -10,88 +10,86 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-/** Allocate Singly Linked List Class into heap
- */
-static inline SinglyLinkedListClass* LinkedListAlloc(void);
+#define ALLOC(x)            malloc(x)   /**< Macro for memory allocation */
+#define FREE(x)             free(x)     /**< Macro for free */
 
-/** Purge allocated linked list
- */
-static inline void LinkedListFree(SinglyLinkedListClass* pThis);
-
-static inline SinglyLinkedListClass* LinkedListAlloc(void)
-{
-    return malloc(sizeof(SinglyLinkedListClass));
-}
-
-static inline void LinkedListFree(SinglyLinkedListClass* pThis)
-{
-    if (pThis != NULL)
-    {
-        free(pThis);
-    }
-}
+#if defined(NDEBUG)
+#define ASSERT(x)
+#else
+#include <assert.h>
+#define ASSERT(x)           assert(x)
+#endif
 
 SinglyLinkedListClass* SinglyLinkedListCreate(void)
 {
-    SinglyLinkedListClass* pRet = LinkedListAlloc();
+    SinglyLinkedListClass* pRet = ALLOC(sizeof(SinglyLinkedListClass));
     if (pRet == NULL)
     {
         return NULL;
     }
+
+    /* The 1st item of SinglyLinkedListClass.pItem is dummy. */
+    pRet->pItem = ALLOC(sizeof(SinglyLinkedListItem));
+    if (pRet->pItem == NULL)
+    {
+        return NULL;
+    }
+
+    pRet->NumberOfItems = 0u;
     return pRet;
 }
 
-LinkedListError SinglyLinkedListAdd(
-    SinglyLinkedListClass*  pThis,
-    LinkedListItemType      pItemToAdd)
+LinkedListError SinglyLinkedListAdd(SinglyLinkedListClass* pThis, void* pValueToAdd)
 {
-    if ((pThis == NULL) || (pItemToAdd == NULL))
+    if ((pThis == NULL) || (pValueToAdd == NULL))
     {
         return LINKED_LIST_ERROR_PARAMETER;
     }
 
     /* Allocate new linked list */
-    SinglyLinkedListClass* pListToAdd = SinglyLinkedListCreate();
+    SinglyLinkedListItem* pListToAdd = ALLOC(sizeof(SinglyLinkedListItem));
     if (pListToAdd == NULL)
     {
         return LINKED_LIST_ERROR_NO_MEMORY;
     }
-    pListToAdd->pItem = pItemToAdd;
+    pListToAdd->pNext  = NULL;
+    pListToAdd->pValue = pValueToAdd;
 
     /* Search the tail of linked list */
-    SinglyLinkedListClass* p = pThis;
-    while (p->pNext != NULL)
+    SinglyLinkedListItem* pItem = pThis->pItem;
+    while (pItem->pNext != NULL)
     {
-        p = p->pNext;
+        pItem = pItem->pNext;
     }
 
     /* Join the item at the tail of linked list */
-    p->pNext = pListToAdd;
+    pItem->pNext = pListToAdd;
+    pThis->NumberOfItems++;
 
     return LINKED_LIST_ERROR_NONE;
 }
 
-LinkedListError SinglyLinkedListRemove(
-    SinglyLinkedListClass*  pThis,
-    LinkedListItemType      pItemToRemove)
+LinkedListError SinglyLinkedListRemove(SinglyLinkedListClass* pThis, void* pValueToRemove)
 {
-    if ((pThis == NULL) || (pItemToRemove == NULL))
+    if ((pThis == NULL) || (pValueToRemove == NULL))
     {
         return LINKED_LIST_ERROR_PARAMETER;
     }
 
     /* Search specified data from the list */
     LinkedListError ret = LINKED_LIST_ERROR_NOT_FOUND;
-    SinglyLinkedListClass* pCurr = pThis->pNext;
-    SinglyLinkedListClass* pPrev = pThis;
+    SinglyLinkedListItem* pCurr = pThis->pItem->pNext;
+    SinglyLinkedListItem* pPrev = pThis->pItem;
     while (pCurr!= NULL)
     {
-        if (pCurr->pItem == pItemToRemove)
+        if (pCurr->pValue == pValueToRemove)
         {
+            ASSERT(pThis->NumberOfItems > 0u);
             ret = LINKED_LIST_ERROR_NONE;
             pPrev->pNext = pCurr->pNext;
-            LinkedListFree(pCurr);
+            FREE(pCurr);
             pCurr = pPrev->pNext;
+            pThis->NumberOfItems--;
         }
         else
         {

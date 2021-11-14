@@ -8,9 +8,6 @@
 #ifndef LINKED_LIST_H_INCLUDE
 #define LINKED_LIST_H_INCLUDE
 
-/** The data type of linked list */
-typedef void*   LinkedListItemType;
-
 /** Error code for Linked List APIs
  */
 typedef enum LinkedListError

@@ -16,6 +16,7 @@ void TestSinglyLinkedList(void)
     /* Prepare test target */
     SinglyLinkedListClass* pList = SinglyLinkedListCreate();
     TEST_ASSERT_NOT_EQUAL(NULL, pList);
+    TEST_ASSERT_EQUAL(0u, pList->NumberOfItems);
 
     LinkedListError err;
 
@@ -23,30 +24,31 @@ void TestSinglyLinkedList(void)
     int32_t d0 = 100;
     err = SinglyLinkedListAdd(pList, &d0);
     TEST_ASSERT_EQUAL(LINKED_LIST_ERROR_NONE, err);
-    TEST_ASSERT_NOT_EQUAL(NULL, pList->pNext);
-    TEST_ASSERT_EQUAL(100, *(int32_t *)(pList->pNext->pItem));
+    TEST_ASSERT_EQUAL(1u, pList->NumberOfItems);
+    TEST_ASSERT_EQUAL(100, *(int32_t *)(pList->pItem->pNext->pValue));
 
     int32_t d1 = 200;
     err = SinglyLinkedListAdd(pList, &d1);
     TEST_ASSERT_EQUAL(LINKED_LIST_ERROR_NONE, err);
-    TEST_ASSERT_NOT_EQUAL(NULL, pList->pNext);
-    TEST_ASSERT_NOT_EQUAL(NULL, pList->pNext->pNext);
-    TEST_ASSERT_EQUAL(200, *(int32_t *)(pList->pNext->pNext->pItem));
+    TEST_ASSERT_EQUAL(2u, pList->NumberOfItems);
+    TEST_ASSERT_EQUAL(200, *(int32_t *)(pList->pItem->pNext->pNext->pValue));
 
     /* Remove existing item */
     err = SinglyLinkedListRemove(pList, &d0);
     TEST_ASSERT_EQUAL(LINKED_LIST_ERROR_NONE, err);
-    TEST_ASSERT_NOT_EQUAL(NULL, pList->pNext);
-    TEST_ASSERT_EQUAL(NULL, pList->pNext->pNext);
-    TEST_ASSERT_EQUAL(200, *(int32_t *)(pList->pNext->pItem));
+    TEST_ASSERT_EQUAL(1u, pList->NumberOfItems);
+    TEST_ASSERT_EQUAL(NULL, pList->pItem->pNext->pNext);
+    TEST_ASSERT_EQUAL(200, *(int32_t *)(pList->pItem->pNext->pValue));
 
     /* Remove not existing item */
     err = SinglyLinkedListRemove(pList, &d0);
     TEST_ASSERT_EQUAL(LINKED_LIST_ERROR_NOT_FOUND, err);
+    TEST_ASSERT_EQUAL(1u, pList->NumberOfItems);
 
     /* Remove existing item */
     err = SinglyLinkedListRemove(pList, &d1);
     TEST_ASSERT_EQUAL(LINKED_LIST_ERROR_NONE, err);
-    TEST_ASSERT_EQUAL(NULL, pList->pNext);
+    TEST_ASSERT_EQUAL(0u, pList->NumberOfItems);
+    TEST_ASSERT_EQUAL(NULL, pList->pItem->pNext);
 }
 
