@@ -13,6 +13,7 @@ BIN_ROOT		:= $(PRJ_ROOT)/$(BIN_DIR)
 
 # Source files
 SRCS			:= \
+	$(SRC_ROOT)/singly_linked_list.c \
 
 # Include directories
 INC_DIRS        := \
@@ -34,11 +35,12 @@ CFLAGS			:= \
 LDFLAGS         := \
 
 # Additional configuration
-IS_UNITTEST := $(findstring _unittest_,_$(MAKEFLAGS)_)
-ifeq ($(IS_UNITTEST),1)
-	-include unittest.mk
-else
+IS_UNITTEST_1 := $(findstring unittest,$(MAKEFLAGS))
+IS_UNITTEST_2 := $(findstring unittest,$(MAKECMDGOALS))
+ifeq ($(or $(IS_UNITTEST_1),$(IS_UNITTEST_2)),)
 	-include all.mk
+else
+	-include unittest.mk
 endif
 
 # Definition
