@@ -101,3 +101,34 @@ LinkedListError SinglyLinkedListRemove(SinglyLinkedListClass* pThis, void* pValu
     return ret;
 }
 
+SinglyLinkedListItem* SinglyLinkedListHead(const SinglyLinkedListClass* pThis)
+{
+    if (pThis == NULL)
+    {
+        return NULL;
+    }
+    return pThis->pItem->pNext;
+}
+
+SinglyLinkedListItem* SinglyLinkedListNext(const SinglyLinkedListItem* pItem)
+{
+    if (pItem == NULL)
+    {
+        return NULL;
+    }
+    return pItem->pNext;
+}
+
+void* SinglyLinkedListValue(const SinglyLinkedListItem* pItem)
+{
+    if (pItem == NULL)
+    {
+        return NULL;
+    }
+    return pItem->pValue;
+}
+
+uint32_t SinglyLinkedListNumberOfItems(const SinglyLinkedListClass* pThis)
+{
+    return pThis->NumberOfItems;
+}

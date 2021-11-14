@@ -54,4 +54,31 @@ LinkedListError SinglyLinkedListAdd(SinglyLinkedListClass* pThis, void* pItemToA
  */
 LinkedListError SinglyLinkedListRemove(SinglyLinkedListClass* pThis, void* pValueToRemove);
 
+/** Acquire pointer to the top of linked list
+ * @param   pThis   Pointer to the Singly Linked List class
+ * @return  Pointer to the top of linked list
+ * @retval  NULL    No available item
+ */
+SinglyLinkedListItem* SinglyLinkedListHead(const SinglyLinkedListClass* pThis);
+
+/** Acquire pointer to the next item of linked list
+ * @param   pItem   Pointer to the linked list item
+ * @return  Pointer to the next item of linked list
+ * @retval  NULL    No next item
+ */
+SinglyLinkedListItem* SinglyLinkedListNext(const SinglyLinkedListItem* pItem);
+
+/** Acquire pointer to the value of specified item
+ * @param   pItem   Pointer to the linked list item
+ * @return  Pointer to the value of specified item
+ * @retval  NULL    pItem is invalid
+ */
+void* SinglyLinkedListValue(const SinglyLinkedListItem* pItem);
+
+/** Acquire the number of items in the list
+ * @param   pThis   Pointer to the Singly Linked List class
+ * @return  Number of items in the list
+ */
+uint32_t SinglyLinkedListNumberOfItems(const SinglyLinkedListClass* pThis);
+
 #endif
